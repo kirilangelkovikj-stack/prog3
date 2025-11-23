@@ -1,0 +1,395 @@
+//zadaca 1
+/*
+#include <iostream>
+using namespace std;
+struct Node {
+    int value;
+    Node* left;
+    Node* right;
+};
+Node* createNode(int v) {
+    Node* n = new Node;
+    n->value = v;
+    n->left = n->right = nullptr;
+    return n;
+}
+void preorder(Node* r) {
+    if (!r) return;
+    cout << r->value << " ";
+    preorder(r->left);
+    preorder(r->right);
+}
+void inorder(Node* r) {
+    if (!r) return;
+    inorder(r->left);
+    cout << r->value << " ";
+    inorder(r->right);
+}
+void postorder(Node* r) {
+    if (!r) return;
+    postorder(r->left);
+    postorder(r->right);
+    cout << r->value << " ";
+}
+Node* bstInsert(Node* root, int v) {
+    if (!root) return createNode(v);
+
+    if (v < root->value)
+        root->left = bstInsert(root->left, v);
+    else
+        root->right = bstInsert(root->right, v);
+
+    return root;
+}
+Node* bstSearch(Node* root, int key) {
+    if (!root || root->value == key) return root;
+    if (key < root->value) return bstSearch(root->left, key);
+    return bstSearch(root->right, key);
+}
+Node* findMin(Node* r) {
+    while (r && r->left) r = r->left;
+    return r;
+}
+Node* bstDelete(Node* root, int key) {
+    if (!root) return nullptr;
+
+    if (key < root->value)
+        root->left = bstDelete(root->left, key);
+    else if (key > root->value)
+        root->right = bstDelete(root->right, key);
+    else {
+        if (!root->left && !root->right) {
+            delete root;
+            return nullptr;
+        }
+        else if (!root->left) {
+            Node* tmp = root->right;
+            delete root;
+            return tmp;
+        }
+        else if (!root->right) {
+            Node* tmp = root->left;
+            delete root;
+            return tmp;
+        }
+        Node* mn = findMin(root->right);
+        root->value = mn->value;
+        root->right = bstDelete(root->right, mn->value);
+    }
+    return root;
+}
+int main() {
+    Node* bt = createNode(1);
+    bt->left = createNode(2);
+    bt->right = createNode(3);
+    bt->left->left = createNode(4);
+    cout<<preorder(bt);
+    cout<<inorder(bt);
+    cout<<postorder(bt);
+    Node* bst = nullptr;
+    int vals[] = {50, 30, 70, 20, 40, 60, 80};
+    for (int x : vals) bst = bstInsert(bst, x);
+    cout<<inorder(bst);
+    Node* f = bstSearch(bst, 60);
+    cout<<(f ? "FOUND" : "NOT FOUND");
+    bst = bstDelete(bst, 50);
+    inorder(bst);
+    return 0;
+}
+*/
+//zadaca 2
+/*
+#include <bits/stdc++.h>
+using namespace std:
+struct Node {
+    int value;
+    Node* left;
+    Node* right;
+};
+Node* createNode(int v) {
+    Node* n = new Node;
+    n->value = v;
+    n->left = nullptr;
+    n->right = nullptr;
+    return n;
+}
+void preorder(Node* r) {
+    if (!r) return;
+    cout << r->value << " ";
+    preorder(r->left);
+    preorder(r->right);
+}
+void inorder(Node* r) {
+    if (!r) return;
+    inorder(r->left);
+    cout << r->value << " ";
+    inorder(r->right);
+}
+void postorder(Node* r) {
+    if (!r) return;
+    postorder(r->left);
+    postorder(r->right);
+    cout << r->value << " ";
+}
+int main() {
+    Node* root = createNode(1);
+    root->left = createNode(2);
+    root->right = createNode(3);
+    root->left->left = createNode(4);
+    preorder(root);
+    cout << endl;
+    inorder(root);
+    cout << endl;
+    postorder(root);
+    cout << endl;
+
+    return 0;
+}
+*/
+/*
+//zadaca 3
+#include <iostream>
+using namespace std;
+struct Node {
+    int value;
+    Node* left;
+    Node* right;
+};
+Node* createNode(int v) {
+    Node* n = new Node;
+    n->value = v;
+    n->left = nullptr;
+    n->right = nullptr;
+    return n;
+}
+void preorder(Node* r) {
+    if (!r) return;
+    cout << r->value << " ";
+    preorder(r->left);
+    preorder(r->right);
+}
+void inorder(Node* r) {
+    if (!r) return;
+    inorder(r->left);
+    cout << r->value << " ";
+    inorder(r->right);
+}
+void postorder(Node* r) {
+    if (!r) return;
+    postorder(r->left);
+    postorder(r->right);
+    cout << r->value << " ";
+}
+bool findValue(Node* root, int x) {
+    if (!root) return false;
+    if (root->value == x) return true;
+    return findValue(root->left, x) || findValue(root->right, x);
+}
+int main() {
+    Node* root = createNode(1);
+    root->left = createNode(2);
+    root->right = createNode(3);
+    root->left->left = createNode(4);
+
+preorder(root);
+cout << endl;
+inorder(root);
+cout << endl;
+postorder(root);
+cout << endl;
+    int k;
+    cin >> k;
+
+    if (findValue(root, k))
+        cout << "Elementot postoi vo drvoto." << endl;
+    else
+        cout << "Elementot NE postoi vo drvoto." << endl;
+
+    return 0;
+}
+*/
+/*
+//zadaca 4
+#include <iostream>
+using namespace std;
+
+struct Node {
+    int value;
+    Node* left;
+    Node* right;
+    Node(int v) : value(v), left(nullptr), right(nullptr) {}
+};
+Node* insert(Node* root, int x) {
+    if (!root) return new Node(x);
+    if (x < root->value) root->left = insert(root->left, x);
+    else root->right = insert(root->right, x);
+    return root;
+}
+void preorderIter(Node* root) {
+    if (!root) return;
+    Node* stack[100]; int top = -1;
+    stack[++top] = root;
+
+    while (top != -1) {
+        Node* curr = stack[top--];
+        cout << curr->value << " ";
+        if (curr->right) stack[++top] = curr->right;
+        if (curr->left) stack[++top] = curr->left;
+    }
+}
+void inorderIter(Node* root) {
+    Node* stack[100]; int top = -1;
+    Node* curr = root;
+
+    while (curr || top != -1) {
+        while (curr) {
+            stack[++top] = curr;
+            curr = curr->left;
+        }
+        curr = stack[top--];
+        cout << curr->value << " ";
+        curr = curr->right;
+    }
+}
+void postorderIter(Node* root) {
+    if (!root) return;
+    Node* s1[100]; int t1 = -1;
+    Node* s2[100]; int t2 = -1;
+
+    s1[++t1] = root;
+
+    while (t1 != -1) {
+        Node* curr = s1[t1--];
+        s2[++t2] = curr;
+        if (curr->left) s1[++t1] = curr->left;
+        if (curr->right) s1[++t1] = curr->right;
+    }
+
+    while (t2 != -1) cout << s2[t2--]->value << " ";
+}
+
+int main() {
+    Node* root = nullptr;
+    root = insert(root, 8);
+    insert(root, 3);
+    insert(root, 10);
+    insert(root, 1);
+    insert(root, 6);
+    insert(root, 14);
+preorderIter(root);
+cout<<endl;
+inorderIter(root);
+cout<<endl;
+postorderIter(root);
+cout<<endl;
+}
+*/
+//zadaca 5
+/*
+#include <iostream>
+#include <queue>
+using namespace std;
+struct Node {
+    int value;
+    Node* left;
+    Node* right;
+};
+Node* createNode(int v) {
+    Node* n = new Node;
+    n->value = v;
+    n->left = nullptr;
+    n->right = nullptr;
+    return n;
+}
+bool findValue(Node* root, int x) {
+    if (!root) return false;
+    if (root->value == x) return true;
+    return findValue(root->left, x) || findValue(root->right, x);
+}
+void BFS(Node* root) {
+    if (!root) return;
+    queue<Node*> q;
+    q.push(root);
+    while (!q.empty()) {
+        Node* curr = q.front(); q.pop();
+        cout << curr->value << " ";
+        if (curr->left) q.push(curr->left);
+        if (curr->right) q.push(curr->right);
+    }
+}
+int main() {
+    Node* root = createNode(1);
+    root->left = createNode(2);
+    root->right = createNode(3);
+    root->left->left = createNode(4);
+BFS(root);
+cout << endl;
+    int k; cin >> k;
+    if (findValue(root, k))
+        cout << "Elementot postoi vo drvoto." << endl;
+    else
+        cout << "Elementot NE postoi vo drvoto." << endl;
+    return 0;
+}
+*/
+/*
+//zadaca 6
+#include <iostream>
+#include <queue>
+using namespace std;
+struct Node {
+    int value;
+    Node* left;
+    Node* right;
+};
+Node* createNode(int v) {
+    Node* n = new Node;
+    n->value = v;
+    n->left = nullptr;
+    n->right = nullptr;
+    return n;
+}
+bool findValue(Node* root, int x) {
+    if (!root) return false;
+    if (root->value == x) return true;
+    return findValue(root->left, x) || findValue(root->right, x);
+}
+void BFS(Node* root) {
+    if (!root) return;
+    queue<Node*> q;
+    q.push(root);
+    while (!q.empty()) {
+        Node* curr = q.front(); q.pop();
+        cout << curr->value << " ";
+        if (curr->left) q.push(curr->left);
+        if (curr->right) q.push(curr->right);
+    }
+}
+int sumTree(Node* root) {
+    if (!root) return 0;
+    int sum = 0;
+    queue<Node*> q;
+    q.push(root);
+
+    while (!q.empty()) {
+        Node* curr = q.front(); q.pop();
+        sum += curr->value;
+        if (curr->left) q.push(curr->left);
+        if (curr->right) q.push(curr->right);
+    }
+    return sum;
+}
+int main() {
+    Node* root = createNode(1);
+    root->left = createNode(2);
+    root->right = createNode(3);
+    root->left->left = createNode(4);
+
+BFS(root);
+cout << endl;
+    int total = sumTree(root);
+    cout<<"Sumata e:"<<total<< endl;
+    return 0;
+}
+*/
+
