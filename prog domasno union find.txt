@@ -1,0 +1,147 @@
+#include <algorithm>
+#include <iostream>
+#include <set>
+#include <vector>
+using namespace std;
+
+class UnionFind {
+private:
+    vector<int> parent, sz, rankv;
+
+public:
+    UnionFind(int n) {
+        parent.resize(n);
+        sz.resize(n, 1);
+        rankv.resize(n, 0);
+        for (int i = 0; i < n; i++)
+            parent[i] = i;
+    }
+    int find_simple(int x) {
+        while (parent[x] != x)
+            x = parent[x];
+        return x;
+    }
+    int smart_find(int x) {
+        if (parent[x] != x)
+            parent[x] = smart_find(parent[x]);
+        return parent[x];
+    }
+
+    void unite(int a, int b, string by, string mode) {
+        int ra = (mode == "smart") ? smart_find(a) : find_simple(a);
+        int rb = (mode == "smart") ? smart_find(b) : find_simple(b);
+
+        if (ra == rb) return;
+
+        if (by == "by size") {
+            if (sz[ra] < sz[rb]) swap(ra, rb);
+            parent[rb] = ra;
+            sz[ra] += sz[rb];
+        }
+        else if (by == "by rank") {
+            if (rankv[ra] < rankv[rb])
+                parent[ra] = rb;
+            else if (rankv[ra] > rankv[rb])
+                parent[rb] = ra;
+            else {
+                parent[rb] = ra;
+                rankv[ra]++;
+            }
+        }
+        else {
+            parent[rb] = ra;
+        }
+    }
+};
+int count_closed_islands(const int* grid, int rows, int columns) {
+    int edgeIndex = rows * columns;
+    UnionFind land(rows * columns + 1);
+
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < columns; j++) {
+            int idx = i * columns + j;
+            if (grid[idx] == 1) continue;
+
+            if (i == 0 || i == rows - 1 || j == 0 || j == columns - 1)
+                land.unite(idx, edgeIndex, "by size", "simple");
+
+            if (j + 1 < columns && grid[i * columns + j + 1] == 0)
+                land.unite(idx, i * columns + j + 1, "by size", "simple");
+
+            if (i + 1 < rows && grid[(i + 1) * columns + j] == 0)
+                land.unite(idx, (i + 1) * columns + j, "by size", "simple");
+        }
+    }
+
+    set<int> closed_islands;
+    int edge = land.smart_find(edgeIndex);
+
+    for (int i = 0; i < rows * columns; i++) {
+        if (grid[i] == 0) {
+            int root = land.smart_find(i);
+            if (root != edge)
+                closed_islands.insert(root);
+        }
+    }
+
+    return closed_islands.size();
+}
+bool path_in_graph(const vector<vector<int>>& edges, int s, int d, int n) {
+    UnionFind graph(n);
+
+    for (int i = 0; i < edges.size(); i++)
+        graph.unite(edges[i][0], edges[i][1], "by rank", "smart");
+
+    return graph.smart_find(s) == graph.smart_find(d);
+}
+int gcd(int a, int b) {
+    return b == 0 ? a : gcd(b, a % b);
+}
+
+bool gcd_sort(const vector<int>& nums) {
+    int n = nums.size();
+    UnionFind uf(n);
+    vector<pair<int, int>> sorted;
+
+    for (int i = 0; i < n - 1; i++)
+        for (int j = i + 1; j < n; j++)
+            if (gcd(nums[i], nums[j]) > 1)
+                uf.unite(i, j, "by rank", "smart");
+
+    for (int i = 0; i < n; i++)
+        sorted.push_back({ nums[i], i });
+
+    sort(sorted.begin(), sorted.end());
+
+    for (int i = 0; i < n; i++)
+        if (uf.smart_find(i) != uf.smart_find(sorted[i].second))
+            return false;
+
+    return true;
+}
+int main() {
+    int grid[5 * 8] = {
+        1,1,1,1,1,1,1,0,
+        1,0,0,0,0,1,1,0,
+        1,0,1,0,1,1,1,0,
+        1,0,0,0,0,1,0,1,
+        1,1,1,1,1,1,1,0
+    };
+
+    cout << "There are " << count_closed_islands(grid, 5, 8)
+         << " closed islands.\n";
+
+    int n = 6, source = 0, destination = 5;
+    vector<vector<int>> edges = {
+        {0,1},{0,2},{3,5},{5,4},{4,3}
+    };
+
+    cout << "A path exists: "
+         << path_in_graph(edges, source, destination, n) << '\n';
+
+    vector<int> nums = {5,2,6,2};
+    cout << "Array can be GCD sorted: "
+         << gcd_sort(nums) << '\n';
+
+    return 0;
+}
