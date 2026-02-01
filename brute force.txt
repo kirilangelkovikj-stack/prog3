@@ -1,0 +1,81 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+void inc_coin(int coin, vector<pair<int,int>>& s) {
+    for (auto& p : s) {
+        if (p.first == coin) {
+            p.second++;
+            return;
+        }
+    }
+}
+bool same_solution(const vector<pair<int,int>>& a,
+                   const vector<pair<int,int>>& b) {
+    if (a.size() != b.size()) return false;
+
+    for (int i = 0; i < a.size(); i++) {
+        if (a[i].second != b[i].second)
+            return false;
+    }
+    return true;
+}
+vector<vector<pair<int,int>>>
+coins_change(int change, const vector<int>& coins) {
+    vector<vector<pair<int,int>>> solutions;
+    vector<pair<int,int>> zero;
+    for (int c : coins)
+        zero.push_back({c, 0});
+    if (change == 0) {
+        solutions.push_back(zero);
+        return solutions;
+    }
+    for (int c : coins) {
+        if (change - c >= 0) {
+            auto partial = coins_change(change - c, coins);
+            for (auto& s : partial) {
+                inc_coin(c, s);
+                solutions.push_back(s);
+            }
+        }
+    }
+    return solutions;
+}
+void filter_duplicates(vector<vector<pair<int,int>>>& solutions) {
+    vector<vector<pair<int,int>>> unique;
+
+    for (auto& s : solutions) {
+        bool found = false;
+        for (auto& u : unique) {
+            if (same_solution(s, u)) {
+                found = true;
+                break;
+            }
+        }
+        if (!found)
+            unique.push_back(s);
+    }
+    solutions = unique;
+}
+void print_solutions(const vector<vector<pair<int,int>>>& solutions) {
+    int idx = 1;
+    for (const auto& sol : solutions) {
+        cout << "Solution " << idx++ << ": ";
+        for (const auto& p : sol) {
+            if (p.second > 0)
+                cout << "<" << p.first << "," << p.second << "> ";
+        }
+        cout << endl;
+    }
+}
+int main() {
+    int change;
+    cout << "Enter change sum: ";
+    cin >> change;
+    vector<int> coins = {1, 2, 5, 10, 50};
+    auto solutions = coins_change(change, coins);
+    filter_duplicates(solutions);
+    cout << "\nTotal unique solutions: " << solutions.size() << endl;
+    print_solutions(solutions);
+    return 0;
+}
+
